@@ -1,0 +1,32 @@
+{
+  "name": "@etalab/contours-administratifs",
+  "version": "0.0.0",
+  "description": "Contours administratifs français à plusieurs échelles",
+  "main": "index.js",
+  "repository": "git@github.com:etalab/contours-administratifs.git",
+  "author": "Jérôme Desboeufs <jerome.desboeufs@data.gouv.fr>",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "build": "lib/build.js",
+    "test": "xo"
+  },
+  "dependencies": {
+    "@etalab/cog": "^0.1.0",
+    "@turf/turf": "^5.1.6",
+    "decompress": "^4.2.0",
+    "fs-extra": "^7.0.0",
+    "lodash": "^4.17.11",
+    "mapshaper": "^0.4.94"
+  },
+  "devDependencies": {
+    "xo": "^0.23.0"
+  },
+  "xo": {
+    "semicolon": false,
+    "space": 2
+  },
+  "engines": {
+    "node": ">= 8"
+  }
+}

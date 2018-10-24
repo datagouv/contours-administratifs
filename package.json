@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@etalab/cog": "^0.1.0",
+    "@etalab/epci": "^0.1.0",
     "@turf/turf": "^5.1.6",
     "decompress": "^4.2.0",
     "fs-extra": "^7.0.0",

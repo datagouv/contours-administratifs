@@ -20,6 +20,12 @@
   version "0.1.0"
   resolved "http://registry.npmjs.org/@etalab/cog/-/cog-0.1.0.tgz#a54b48600cb4714f46eaba6fc5152104e0465f4a"
 
+"@etalab/epci@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@etalab/epci/-/epci-0.1.0.tgz#00fb66020d3350cd3647f8f96edb8c55c0ffcc8e"
+  dependencies:
+    lodash "^4.17.11"
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"

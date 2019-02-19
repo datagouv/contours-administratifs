@@ -16,15 +16,10 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@etalab/cog@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@etalab/cog/-/cog-0.2.0.tgz#78813a69e7e32c0fe5dae4df1a232baba2ae5778"
-  integrity sha512-6TJcWqGWqdSS/hj0c0G9g7YRwDdHGX14pX2nS7d08+pOh844YpUR/YJ8b8AShLc07iQYlIYeHySYlVWqw1k7Eg==
-
-"@etalab/epci@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@etalab/epci/-/epci-0.2.0.tgz#ccb7e9d019e7efb95b9cdcaac848f452d4e25772"
-  integrity sha512-jyf+fQIBS/yOohvvqCLyKS/ZDlulxxQci4C4j0LTz/kNAcBlnYZcYNAKBp2x8a6XS5Tu49Z/+WHpSyKnakfPoA==
+"@etalab/decoupage-administratif@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@etalab/decoupage-administratif/-/decoupage-administratif-0.3.0.tgz#5af34065ac82672f62ece3b9cd12184688ffcb73"
+  integrity sha512-tpXVQ2kv8cZPe9DXfflsKK4xF18VwNTitpgnj2nvZO1jmg5co3wDg8qGucSVoPK6LTzD3ON7U6E1yxNX9s4/XQ==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"

@@ -9,7 +9,7 @@
   "private": false,
   "scripts": {
     "build": "lib/build.js",
-    "test": "xo"
+    "lint": "xo"
   },
   "dependencies": {
     "@etalab/decoupage-administratif": "^0.3.0",

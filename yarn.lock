@@ -16,10 +16,12 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@etalab/decoupage-administratif@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@etalab/decoupage-administratif/-/decoupage-administratif-0.3.0.tgz#5af34065ac82672f62ece3b9cd12184688ffcb73"
-  integrity sha512-tpXVQ2kv8cZPe9DXfflsKK4xF18VwNTitpgnj2nvZO1jmg5co3wDg8qGucSVoPK6LTzD3ON7U6E1yxNX9s4/XQ==
+"@etalab/decoupage-administratif@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@etalab/decoupage-administratif/-/decoupage-administratif-0.7.0.tgz#c39c463259f4e23f5466e574a629b085ef6663dd"
+  integrity sha512-ezO+LHyIrJjDBlE7DxXSbvHxSliTGT4o4+w1pMaA6FjCVDFiW74zp5Lhmi1GpY2JcelKq4m8zHjDol08O6unqQ==
+  dependencies:
+    lodash "^4.17.15"
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"

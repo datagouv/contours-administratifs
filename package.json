@@ -12,7 +12,7 @@
     "lint": "xo"
   },
   "dependencies": {
-    "@etalab/decoupage-administratif": "^0.3.0",
+    "@etalab/decoupage-administratif": "^0.7.0",
     "@turf/turf": "^5.1.6",
     "decompress": "^4.2.0",
     "fs-extra": "^8.1.0",

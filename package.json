@@ -15,6 +15,7 @@
     "@etalab/decoupage-administratif": "^0.7.0",
     "@turf/turf": "^5.1.6",
     "decompress": "^4.2.0",
+    "dotenv": "^8.2.0",
     "fs-extra": "^8.1.0",
     "lodash": "^4.17.15",
     "mapshaper": "^0.4.152"

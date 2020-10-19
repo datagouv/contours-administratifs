@@ -63,3 +63,4 @@ typings/
 /data
 /dist
 .DS_Store
+*.sqlite

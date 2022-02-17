@@ -1,18 +1,18 @@
 #!/usr/bin/env node --max_old_space_size=8192
 require('dotenv').config()
-const {join, resolve} = require('path')
+const {join} = require('path')
 const Keyv = require('keyv')
-const {writeFile, mkdirp} = require('fs-extra')
+const {outputFile} = require('fs-extra')
 const decompress = require('decompress')
 const {truncate, feature} = require('@turf/turf')
-const readShpFeaturesAndSimplify = require('./read-shp-features-simplify')
-const {mergeFeatures} = require('./merge')
-const {communesIndexes, departementsIndexes, regionsIndexes, epciIndexes} = require('./decoupage-administratif')
+const readShpFeaturesAndSimplify = require('./lib/read-shp-features-simplify')
+const {mergeFeatures} = require('./lib/merge')
+const {communesIndexes, departementsIndexes, regionsIndexes, epciIndexes} = require('./lib/decoupage-administratif')
 
-const communesArchive = resolve(process.env.COMMUNES_PATH)
-const arrondissementsArchive = resolve(process.env.ARRONDISSEMENTS_PATH)
-const communesComArchive = resolve(process.env.COMMUNES_COM_PATH)
-const destPath = join(__dirname, '..', 'dist')
+const communesArchive = join(__dirname, 'sources', 'ign-communes-shp.zip')
+const arrondissementsArchive = join(__dirname, 'sources', 'ign-arrondissements-municipaux-shp.zip')
+const communesComArchive = join(__dirname, 'sources', 'osm-communes-com-shp.zip')
+const distPath = join(__dirname, '..', 'dist')
 
 async function getSimplifiedCommunes(communesFiles, interval) {
   const readFeatures = await readShpFeaturesAndSimplify(communesFiles, interval)
@@ -81,8 +81,8 @@ async function writeLayer(features, interval, layerName) {
     await db.set(feature.properties.code, feature)
   }))
 
-  await writeFile(
-    join(destPath, `${layerName}-${interval}m.geojson`),
+  await outputFile(
+    join(distPath, `${layerName}-${interval}m.geojson`),
     stringify(truncatedFeatures)
   )
 }
@@ -169,7 +169,6 @@ async function buildContours(communesFiles, arrondissementsFiles, communesComFil
 }
 
 async function main() {
-  await mkdirp(destPath)
   const communesFiles = await decompress(communesArchive)
   const arrondissementsFiles = await decompress(arrondissementsArchive)
   const communesComFiles = await decompress(communesComArchive)

@@ -60,7 +60,7 @@ typings/
 # next.js build output
 .next
 
-/data
+/sources
 /dist
 .DS_Store
 *.sqlite

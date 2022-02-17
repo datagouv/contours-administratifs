@@ -8,7 +8,7 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "build": "lib/build.js",
+    "build": "node build",
     "lint": "xo"
   },
   "dependencies": {

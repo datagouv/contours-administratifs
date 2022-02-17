@@ -13,13 +13,13 @@
   },
   "dependencies": {
     "@etalab/decoupage-administratif": "^0.8.0",
-    "@keyv/sqlite": "^2.0.2",
-    "@turf/turf": "^5.1.6",
+    "@keyv/sqlite": "^3.0.0",
+    "@turf/turf": "^6.5.0",
     "decompress": "^4.2.1",
-    "dotenv": "^8.2.0",
-    "fs-extra": "^9.0.1",
-    "keyv": "^4.0.3",
-    "lodash": "^4.17.20",
+    "dotenv": "^16.0.0",
+    "fs-extra": "^10.0.0",
+    "keyv": "^4.1.1",
+    "lodash": "^4.17.21",
     "mapshaper": "^0.4.152"
   },
   "devDependencies": {

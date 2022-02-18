@@ -6,7 +6,7 @@ const bluebird = require('bluebird')
 const {outputJson, readFile} = require('fs-extra')
 const {truncate, feature} = require('@turf/turf')
 const extractFeaturesFromShapefiles = require('./lib/extract-features-from-shapefiles')
-const {mergeFeatures} = require('./lib/merge')
+const mergeFeatures = require('./lib/merge-features')
 const {communesIndexes, departementsIndexes, regionsIndexes, epciIndexes} = require('./lib/decoupage-administratif')
 
 const SOURCES_PATH = join(__dirname, 'sources')
@@ -82,7 +82,7 @@ async function writeLayer(features, interval, layerName) {
 }
 
 async function buildAndWriteEPCI(simplifiedCommunes, interval) {
-  const epci = (await mergeFeatures(simplifiedCommunes.filter(c => c.properties.epci), 'epci')).map(({geometry, properties}) => {
+  const epci = (await mergeFeatures(simplifiedCommunes, 'epci')).map(({geometry, properties}) => {
     const {code, nom} = epciIndexes.code[properties.epci]
     return feature(geometry, {code, nom})
   })

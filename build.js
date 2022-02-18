@@ -1,69 +1,76 @@
 #!/usr/bin/env node --max_old_space_size=8192
 require('dotenv').config()
 const {join} = require('path')
+const {chain, keyBy} = require('lodash')
 const Keyv = require('keyv')
 const bluebird = require('bluebird')
 const {outputJson, readFile} = require('fs-extra')
 const {truncate, feature} = require('@turf/turf')
 const extractFeaturesFromShapefiles = require('./lib/extract-features-from-shapefiles')
 const mergeFeatures = require('./lib/merge-features')
-const {communesIndexes, departementsIndexes, regionsIndexes, epciIndexes} = require('./lib/decoupage-administratif')
+const {communes, epci, departements, regions, communesIndexes, epciIndexes} = require('./lib/decoupage-administratif')
 
 const SOURCES_PATH = join(__dirname, 'sources')
 const distPath = join(__dirname, 'dist')
 
-async function getSimplifiedCommunes(communesFiles, interval) {
-  const readFeatures = await extractFeaturesFromShapefiles(communesFiles, interval)
+async function getSimplifiedGeometries(featuresFiles, interval) {
+  const readFeatures = await extractFeaturesFromShapefiles(featuresFiles, interval)
 
-  return readFeatures.map(feature => {
-    const {properties: p} = feature
-    const newProperties = {
-      code: p.INSEE_COM,
-      nom: p.NOM,
-      departement: p.INSEE_DEP,
-      region: p.INSEE_REG,
-      epci: p.INSEE_COM in epciIndexes.commune ?
-        epciIndexes.commune[p.INSEE_COM].code :
-        undefined
-    }
-    feature.properties = newProperties
-    return feature
-  })
-}
-
-async function getSimplifiedArrondissements(arrondissementsFiles, interval) {
-  const readFeatures = await extractFeaturesFromShapefiles(arrondissementsFiles, interval)
-
-  return readFeatures.map(feature => {
-    const {properties: p} = feature
-    const commune = communesIndexes.code[p.INSEE_COM]
-    const newProperties = {
-      code: p.INSEE_ARM,
-      nom: p.NOM,
-      commune: p.INSEE_COM,
-      departement: commune.departement,
-      region: commune.region
-    }
-    feature.properties = newProperties
-    return feature
-  })
-}
-
-async function getSimplifiedCommunesCom(communesComFiles, interval) {
-  const readFeatures = await extractFeaturesFromShapefiles(communesComFiles, interval)
-
-  return readFeatures
-    .filter(f => f.properties.insee.length === 5)
-    .map(feature => {
-      const {properties: p} = feature
-      const newProperties = {
-        code: p.insee,
-        nom: p.nom,
-        collectivite: p.insee.slice(0, 3)
-      }
-      feature.properties = newProperties
-      return feature
+  return chain(readFeatures)
+    .map(({properties: p, geometry}) => {
+      return [
+        p.INSEE_ARM || p.INSEE_COM || p.insee,
+        geometry
+      ]
     })
+    .fromPairs()
+    .value()
+}
+
+async function computeCommunesIndex(featuresFiles, interval) {
+  const geometriesIndex = await getSimplifiedGeometries(featuresFiles, interval)
+  const unmergedFeatures = []
+
+  communes.forEach(commune => {
+    const geometries = []
+    const codes = []
+
+    if (geometriesIndex[commune.code]) {
+      geometries.push(geometriesIndex[commune.code])
+    } else {
+      console.log(`Géométrie non trouvée pour la commune ${commune.code}`)
+    }
+
+    if (commune.anciensCodes) {
+      for (const ancienCode of commune.anciensCodes) {
+        const geometry = geometriesIndex[ancienCode]
+
+        if (geometry) {
+          geometries.push(geometry)
+          codes.push(ancienCode)
+        }
+      }
+    }
+
+    if (codes.length > 0) {
+      console.log(`Contours des codes ${codes.join(',')} fusionnés en ${commune.code}`)
+    }
+
+    if (geometries.length === 0) {
+      throw new Error(`Aucune géométrie pour construire le contour de la commune ${commune.code}`)
+    }
+
+    for (const geometry of geometries) {
+      unmergedFeatures.push(feature(geometry, {code: commune.code}))
+    }
+  })
+
+  const mergedFeatures = await mergeFeatures(unmergedFeatures, 'code')
+
+  return chain(mergedFeatures)
+    .map(f => [f.properties.code, f.geometry])
+    .fromPairs()
+    .value()
 }
 
 async function writeLayer(features, interval, layerName) {
@@ -81,55 +88,110 @@ async function writeLayer(features, interval, layerName) {
   )
 }
 
-async function buildAndWriteEPCI(simplifiedCommunes, interval) {
-  const epci = (await mergeFeatures(simplifiedCommunes, 'epci')).map(({geometry, properties}) => {
-    const {code, nom} = epciIndexes.code[properties.epci]
-    return feature(geometry, {code, nom})
-  })
-  await writeLayer(epci, interval, 'epci')
+async function composeFeatures(items, geometriesIndex) {
+  const unmergedFeatures = []
+  const indexedItems = keyBy(items, 'id')
+
+  for (const item of items) {
+    for (const member of item.members) {
+      unmergedFeatures.push(feature(
+        geometriesIndex[member],
+        {id: item.id}
+      ))
+    }
+  }
+
+  const mergedFeatures = await mergeFeatures(unmergedFeatures, 'id')
+
+  return mergedFeatures.map(
+    ({geometry, properties}) => feature(geometry, indexedItems[properties.id].properties)
+  )
 }
 
-async function buildAndWriteDepartements(simplifiedCommunes, interval) {
-  const departements = (await mergeFeatures(simplifiedCommunes, 'departement')).map(({geometry, properties}) => {
-    const {code, nom, region} = departementsIndexes.code[properties.departement]
-    return feature(geometry, {code, nom, region})
-  })
-  await writeLayer(departements, interval, 'departements')
+async function buildAndWriteEPCI(communesIndex, interval) {
+  const features = await composeFeatures(
+    epci.map(e => ({
+      id: e.code,
+      members: e.membres.map(m => m.code),
+      properties: {
+        code: e.code,
+        nom: e.nom
+      }
+    })),
+    communesIndex
+  )
+
+  await writeLayer(features, interval, 'epci')
 }
 
-async function buildAndWriteRegions(simplifiedCommunes, interval) {
-  const regions = (await mergeFeatures(simplifiedCommunes, 'region')).map(({geometry, properties}) => {
-    const {code, nom} = regionsIndexes.code[properties.region]
-    return feature(geometry, {code, nom})
-  })
-  await writeLayer(regions, interval, 'regions')
+async function buildAndWriteDepartements(communesIndex, interval) {
+  const features = await composeFeatures(
+    departements.map(d => ({
+      id: d.code,
+      members: communesIndexes.departement[d.code]
+        .filter(c => c.type === 'commune-actuelle')
+        .map(c => c.code),
+      properties: {
+        code: d.code,
+        nom: d.nom,
+        region: d.region
+      }
+    })),
+    communesIndex
+  )
+
+  await writeLayer(features, interval, 'departements')
 }
 
-async function buildAndWriteCommunes(simplifiedCommunes, interval) {
-  const communes = simplifiedCommunes.map(({geometry, properties}) => {
-    const {code, nom, departement, region} = communesIndexes.code[properties.code]
-    return feature(geometry, {
-      code, nom, departement, region,
-      epci: properties.epci
-    })
-  })
-  await writeLayer(communes, interval, 'communes')
+async function buildAndWriteRegions(communesIndex, interval) {
+  const features = await composeFeatures(
+    regions.map(r => ({
+      id: r.code,
+      members: communesIndexes.region[r.code]
+        .filter(c => c.type === 'commune-actuelle')
+        .map(c => c.code),
+      properties: {
+        code: r.code,
+        nom: r.nom
+      }
+    })),
+    communesIndex
+  )
+
+  await writeLayer(features, interval, 'regions')
 }
 
-async function buildAndWriteArrondissements(simplifiedArrondissements, interval) {
-  const arrondissements = simplifiedArrondissements.map(({geometry, properties}) => {
-    const {code, nom, departement, region} = communesIndexes.code[properties.code]
-    return feature(geometry, {code, nom, departement, region, commune: properties.commune})
-  })
-  await writeLayer(arrondissements, interval, 'arrondissements-municipaux')
-}
+async function buildAndWriteCommunes(communesIndex, interval) {
+  const communesFeatures = communes.map(commune => {
+    const geometry = communesIndex[commune.code]
 
-async function buildAndWriteCommunesCom(simplifiedCommunesCom, interval) {
-  const communesCom = simplifiedCommunesCom.map(({geometry, properties}) => {
-    const {code, nom} = communesIndexes.code[properties.code]
-    return feature(geometry, {code, nom, collectivite: code.slice(0, 3)})
+    const properties = {
+      code: commune.code,
+      nom: commune.nom,
+      departement: commune.departement,
+      region: commune.region
+    }
+
+    if (['75056', '13055', '69123'].includes(commune.code)) {
+      properties.plm = true
+    }
+
+    if (commune.commune) {
+      properties.commune = commune.commune
+    }
+
+    if (commune.code in epciIndexes.commune) {
+      properties.epci = epciIndexes.commune[commune.code].code
+    }
+
+    if (commune.collectiviteOutremer) {
+      properties.collectiviteOutremer = commune.collectiviteOutremer.code
+    }
+
+    return feature(geometry, properties)
   })
-  await writeLayer(communesCom, interval, 'communes-com')
+
+  await writeLayer(communesFeatures, interval, 'communes')
 }
 
 function getPrecision(interval) {
@@ -148,18 +210,14 @@ function getPrecision(interval) {
   return 3
 }
 
-async function buildContours(communesFiles, arrondissementsFiles, communesComFiles, interval) {
+async function buildContours(featuresFiles, interval) {
   console.log(`  Extraction et simplification des communes : ${interval}m`)
-  const simplifiedCommunes = await getSimplifiedCommunes(communesFiles, interval)
-  const simplifiedArrondissements = await getSimplifiedArrondissements(arrondissementsFiles, interval)
-  const simplifiedCommunesCom = await getSimplifiedCommunesCom(communesComFiles, interval)
+  const communesIndex = await computeCommunesIndex(featuresFiles, interval)
 
-  await buildAndWriteEPCI(simplifiedCommunes, interval)
-  await buildAndWriteDepartements(simplifiedCommunes, interval)
-  await buildAndWriteRegions(simplifiedCommunes, interval)
-  await buildAndWriteCommunes(simplifiedCommunes, interval)
-  await buildAndWriteArrondissements(simplifiedArrondissements, interval)
-  await buildAndWriteCommunesCom(simplifiedCommunesCom, interval)
+  await buildAndWriteCommunes(communesIndex, interval)
+  await buildAndWriteEPCI(communesIndex, interval)
+  await buildAndWriteDepartements(communesIndex, interval)
+  await buildAndWriteRegions(communesIndex, interval)
 }
 
 async function readSourcesFiles(fileNames) {
@@ -171,14 +229,28 @@ async function readSourcesFiles(fileNames) {
 }
 
 async function main() {
-  const communesFiles = await readSourcesFiles(['COMMUNE.cpg', 'COMMUNE.shp', 'COMMUNE.dbf', 'COMMUNE.prj', 'COMMUNE.shx'])
-  const arrondissementsFiles = await readSourcesFiles(['ARRONDISSEMENT_MUNICIPAL.cpg', 'ARRONDISSEMENT_MUNICIPAL.shp', 'ARRONDISSEMENT_MUNICIPAL.dbf', 'ARRONDISSEMENT_MUNICIPAL.prj', 'ARRONDISSEMENT_MUNICIPAL.shx'])
-  const communesComFiles = await readSourcesFiles(['osm-communes-com.cpg', 'osm-communes-com.shp', 'osm-communes-com.dbf', 'osm-communes-com.prj', 'osm-communes-com.shx'])
+  const featuresFiles = await readSourcesFiles([
+    'COMMUNE.cpg',
+    'COMMUNE.shp',
+    'COMMUNE.dbf',
+    'COMMUNE.prj',
+    'COMMUNE.shx',
+    'ARRONDISSEMENT_MUNICIPAL.cpg',
+    'ARRONDISSEMENT_MUNICIPAL.shp',
+    'ARRONDISSEMENT_MUNICIPAL.dbf',
+    'ARRONDISSEMENT_MUNICIPAL.prj',
+    'ARRONDISSEMENT_MUNICIPAL.shx',
+    'osm-communes-com.cpg',
+    'osm-communes-com.shp',
+    'osm-communes-com.dbf',
+    'osm-communes-com.prj',
+    'osm-communes-com.shx'
+  ])
 
-  await buildContours(communesFiles, arrondissementsFiles, communesComFiles, 1000)
-  await buildContours(communesFiles, arrondissementsFiles, communesComFiles, 100)
-  await buildContours(communesFiles, arrondissementsFiles, communesComFiles, 50)
-  await buildContours(communesFiles, arrondissementsFiles, communesComFiles, 5)
+  await buildContours(featuresFiles, 1000)
+  await buildContours(featuresFiles, 100)
+  await buildContours(featuresFiles, 50)
+  await buildContours(featuresFiles, 5)
 }
 
 main().catch(error => {

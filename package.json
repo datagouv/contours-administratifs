@@ -18,9 +18,11 @@
     "decompress": "^4.2.1",
     "dotenv": "^16.0.0",
     "fs-extra": "^10.0.0",
+    "got": "^11",
     "keyv": "^4.1.1",
     "lodash": "^4.17.21",
-    "mapshaper": "^0.4.152"
+    "mapshaper": "^0.4.152",
+    "node-7z": "^3.0.0"
   },
   "devDependencies": {
     "xo": "^0.25.3"

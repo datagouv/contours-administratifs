@@ -25,6 +25,8 @@ Script permettant de générer les principaux contours administratifs selon diff
 ### Pré-requis
 
 - Node.js 12 et supérieur
+- 7zip
+- tippecanoe (pour générer les tuiles vectorielles)
 
 ### Préparation des données
 

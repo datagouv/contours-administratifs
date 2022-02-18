@@ -2,7 +2,7 @@
 require('dotenv').config()
 const {join} = require('path')
 const Keyv = require('keyv')
-const {outputFile} = require('fs-extra')
+const {outputJson} = require('fs-extra')
 const decompress = require('decompress')
 const {truncate, feature} = require('@turf/turf')
 const readShpFeaturesAndSimplify = require('./lib/read-shp-features-simplify')
@@ -12,7 +12,7 @@ const {communesIndexes, departementsIndexes, regionsIndexes, epciIndexes} = requ
 const communesArchive = join(__dirname, 'sources', 'ign-communes-shp.zip')
 const arrondissementsArchive = join(__dirname, 'sources', 'ign-arrondissements-municipaux-shp.zip')
 const communesComArchive = join(__dirname, 'sources', 'osm-communes-com-shp.zip')
-const distPath = join(__dirname, '..', 'dist')
+const distPath = join(__dirname, 'dist')
 
 async function getSimplifiedCommunes(communesFiles, interval) {
   const readFeatures = await readShpFeaturesAndSimplify(communesFiles, interval)
@@ -68,10 +68,6 @@ async function getSimplifiedCommunesCom(communesComFiles, interval) {
     })
 }
 
-function stringify(features) {
-  return JSON.stringify({type: 'FeatureCollection', features})
-}
-
 async function writeLayer(features, interval, layerName) {
   const precision = getPrecision(interval)
   const truncatedFeatures = features.map(f => truncate(f, {precision, coordinates: 2, mutate: false}))
@@ -81,9 +77,9 @@ async function writeLayer(features, interval, layerName) {
     await db.set(feature.properties.code, feature)
   }))
 
-  await outputFile(
+  await outputJson(
     join(distPath, `${layerName}-${interval}m.geojson`),
-    stringify(truncatedFeatures)
+    {type: 'FeatureCollection', features: truncatedFeatures}
   )
 }
 

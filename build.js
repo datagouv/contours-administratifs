@@ -1,13 +1,14 @@
 #!/usr/bin/env node --max_old_space_size=8192
 require('dotenv').config()
 const {join} = require('path')
-const {chain, keyBy} = require('lodash')
+const {chain} = require('lodash')
 const Keyv = require('keyv')
 const bluebird = require('bluebird')
 const {outputJson, readFile} = require('fs-extra')
 const {truncate, feature} = require('@turf/turf')
 const extractFeaturesFromShapefiles = require('./lib/extract-features-from-shapefiles')
 const mergeFeatures = require('./lib/merge-features')
+const composeFeatures = require('./lib/compose-features')
 const {communes, epci, departements, regions, communesIndexes, epciIndexes} = require('./lib/decoupage-administratif')
 
 const SOURCES_PATH = join(__dirname, 'sources')
@@ -85,26 +86,6 @@ async function writeLayer(features, interval, layerName) {
   await outputJson(
     join(DIST_PATH, `${layerName}-${interval}m.geojson`),
     {type: 'FeatureCollection', features: truncatedFeatures}
-  )
-}
-
-async function composeFeatures(items, geometriesIndex) {
-  const unmergedFeatures = []
-  const indexedItems = keyBy(items, 'id')
-
-  for (const item of items) {
-    for (const member of item.members) {
-      unmergedFeatures.push(feature(
-        geometriesIndex[member],
-        {id: item.id}
-      ))
-    }
-  }
-
-  const mergedFeatures = await mergeFeatures(unmergedFeatures, 'id')
-
-  return mergedFeatures.map(
-    ({geometry, properties}) => feature(geometry, indexedItems[properties.id].properties)
   )
 }
 

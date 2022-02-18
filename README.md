@@ -28,26 +28,22 @@ Script permettant de générer les principaux contours administratifs selon diff
 - 7zip
 - tippecanoe (pour générer les tuiles vectorielles)
 
-### Préparation des données
-
-Actuellement ce script ne gère pas la préparation en amont des données (téléchargement, packaging).
-
-#### ADMIN EXPRESS
-
-Étape 1 : on [télécharge](https://data.cquest.org/ign/adminexpress/ADMIN-EXPRESS-COG_3-0__SHP__FRA_WM_2021-05-19.7z) le millésime COG 2021 de ADMIN EXPRESS en WGS-84.
-
-Étape 2 : on décompresse (par exemple avec `unar`) l'archive 7z
-
-Étape 3 : on créé deux archives `sources/ign-communes-shp.zip` avec les fichiers `**/COMMUNE.*` et `sources/ign-arrondissements-municipaux-shp.zip` avec les fichiers `**/ARRONDISSEMENT_MUNICIPAL.*`.
-
-#### OpenStreetMap France
+### Installation des dépendances Node.js
 
 ```bash
-curl https://osm13.openstreetmap.fr/~cquest/openfla/export/communes-com-20220101-shp.zip > sources/osm-communes-com-shp.zip
+yarn
+```
+
+### Préparation des sources
+
+La préparation des sources inclut la récupération des données auprès des serveurs OpenStreetMap et OpenDatArchives et la décompression des fichiers utiles dans le dossier `sources`.
+
+```bash
+yarn prepare-sources
 ```
 
 ### Génération des données + généralisation
 
 ```
-yarn --prod && yarn build
+yarn build
 ```

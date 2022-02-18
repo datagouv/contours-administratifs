@@ -2,20 +2,18 @@
 require('dotenv').config()
 const {join} = require('path')
 const Keyv = require('keyv')
-const {outputJson} = require('fs-extra')
-const decompress = require('decompress')
+const bluebird = require('bluebird')
+const {outputJson, readFile} = require('fs-extra')
 const {truncate, feature} = require('@turf/turf')
-const readShpFeaturesAndSimplify = require('./lib/read-shp-features-simplify')
+const extractFeaturesFromShapefiles = require('./lib/extract-features-from-shapefiles')
 const {mergeFeatures} = require('./lib/merge')
 const {communesIndexes, departementsIndexes, regionsIndexes, epciIndexes} = require('./lib/decoupage-administratif')
 
-const communesArchive = join(__dirname, 'sources', 'ign-communes-shp.zip')
-const arrondissementsArchive = join(__dirname, 'sources', 'ign-arrondissements-municipaux-shp.zip')
-const communesComArchive = join(__dirname, 'sources', 'osm-communes-com-shp.zip')
+const SOURCES_PATH = join(__dirname, 'sources')
 const distPath = join(__dirname, 'dist')
 
 async function getSimplifiedCommunes(communesFiles, interval) {
-  const readFeatures = await readShpFeaturesAndSimplify(communesFiles, interval)
+  const readFeatures = await extractFeaturesFromShapefiles(communesFiles, interval)
 
   return readFeatures.map(feature => {
     const {properties: p} = feature
@@ -34,7 +32,7 @@ async function getSimplifiedCommunes(communesFiles, interval) {
 }
 
 async function getSimplifiedArrondissements(arrondissementsFiles, interval) {
-  const readFeatures = await readShpFeaturesAndSimplify(arrondissementsFiles, interval)
+  const readFeatures = await extractFeaturesFromShapefiles(arrondissementsFiles, interval)
 
   return readFeatures.map(feature => {
     const {properties: p} = feature
@@ -52,7 +50,7 @@ async function getSimplifiedArrondissements(arrondissementsFiles, interval) {
 }
 
 async function getSimplifiedCommunesCom(communesComFiles, interval) {
-  const readFeatures = await readShpFeaturesAndSimplify(communesComFiles, interval)
+  const readFeatures = await extractFeaturesFromShapefiles(communesComFiles, interval)
 
   return readFeatures
     .filter(f => f.properties.insee.length === 5)
@@ -164,10 +162,18 @@ async function buildContours(communesFiles, arrondissementsFiles, communesComFil
   await buildAndWriteCommunesCom(simplifiedCommunesCom, interval)
 }
 
+async function readSourcesFiles(fileNames) {
+  return bluebird.mapSeries(fileNames, async fileName => {
+    const filePath = join(SOURCES_PATH, fileName)
+    const fileData = await readFile(filePath)
+    return {name: fileName, data: fileData}
+  })
+}
+
 async function main() {
-  const communesFiles = await decompress(communesArchive)
-  const arrondissementsFiles = await decompress(arrondissementsArchive)
-  const communesComFiles = await decompress(communesComArchive)
+  const communesFiles = await readSourcesFiles(['COMMUNE.cpg', 'COMMUNE.shp', 'COMMUNE.dbf', 'COMMUNE.prj', 'COMMUNE.shx'])
+  const arrondissementsFiles = await readSourcesFiles(['ARRONDISSEMENT_MUNICIPAL.cpg', 'ARRONDISSEMENT_MUNICIPAL.shp', 'ARRONDISSEMENT_MUNICIPAL.dbf', 'ARRONDISSEMENT_MUNICIPAL.prj', 'ARRONDISSEMENT_MUNICIPAL.shx'])
+  const communesComFiles = await readSourcesFiles(['osm-communes-com.cpg', 'osm-communes-com.shp', 'osm-communes-com.dbf', 'osm-communes-com.prj', 'osm-communes-com.shx'])
 
   await buildContours(communesFiles, arrondissementsFiles, communesComFiles, 1000)
   await buildContours(communesFiles, arrondissementsFiles, communesComFiles, 100)

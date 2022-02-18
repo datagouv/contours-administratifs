@@ -11,7 +11,7 @@ const mergeFeatures = require('./lib/merge-features')
 const {communes, epci, departements, regions, communesIndexes, epciIndexes} = require('./lib/decoupage-administratif')
 
 const SOURCES_PATH = join(__dirname, 'sources')
-const distPath = join(__dirname, 'dist')
+const DIST_PATH = join(__dirname, 'dist')
 
 async function getSimplifiedGeometries(featuresFiles, interval) {
   const readFeatures = await extractFeaturesFromShapefiles(featuresFiles, interval)
@@ -83,7 +83,7 @@ async function writeLayer(features, interval, layerName) {
   }))
 
   await outputJson(
-    join(distPath, `${layerName}-${interval}m.geojson`),
+    join(DIST_PATH, `${layerName}-${interval}m.geojson`),
     {type: 'FeatureCollection', features: truncatedFeatures}
   )
 }

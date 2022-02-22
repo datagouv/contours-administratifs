@@ -13,6 +13,45 @@ const {communes, epci, departements, regions, communesIndexes, epciIndexes} = re
 
 const SOURCES_PATH = join(__dirname, 'sources')
 const DIST_PATH = join(__dirname, 'dist')
+const FILES_ADMIN_EXPRESS = [
+  'COMMUNE.cpg',
+  'COMMUNE.shp',
+  'COMMUNE.dbf',
+  'COMMUNE.prj',
+  'COMMUNE.shx',
+  'ARRONDISSEMENT_MUNICIPAL.cpg',
+  'ARRONDISSEMENT_MUNICIPAL.shp',
+  'ARRONDISSEMENT_MUNICIPAL.dbf',
+  'ARRONDISSEMENT_MUNICIPAL.prj',
+  'ARRONDISSEMENT_MUNICIPAL.shx'
+]
+const FILES_OSM_COMMUNES_METRO = [
+  'osm-communes.cpg',
+  'osm-communes.shp',
+  'osm-communes.dbf',
+  'osm-communes.prj',
+  'osm-communes.shx',
+  'osm-arrondissements-municipaux.cpg',
+  'osm-arrondissements-municipaux.shp',
+  'osm-arrondissements-municipaux.dbf',
+  'osm-arrondissements-municipaux.prj',
+  'osm-arrondissements-municipaux.shx'
+] 
+const DEFAULT_SHP_FILES = [
+  'osm-communes-com.cpg',
+  'osm-communes-com.shp',
+  'osm-communes-com.dbf',
+  'osm-communes-com.prj',
+  'osm-communes-com.shx'
+]
+const DATASOURCES_TYPE = process.env.DATASOURCES_TYPE || 'admin-express'
+
+let COMBINED_SHAPEFILE_LIST;
+if (DATASOURCES_TYPE == 'admin-express') {
+  COMBINED_SHAPEFILE_LIST = [...FILES_ADMIN_EXPRESS, ...DEFAULT_SHP_FILES]
+} else {
+  COMBINED_SHAPEFILE_LIST = [...FILES_OSM_COMMUNES_METRO, ...DEFAULT_SHP_FILES]
+}
 
 async function getSimplifiedGeometries(featuresFiles, interval) {
   const readFeatures = await extractFeaturesFromShapefiles(featuresFiles, interval)
@@ -210,24 +249,7 @@ async function readSourcesFiles(fileNames) {
 }
 
 async function main() {
-  const featuresFiles = await readSourcesFiles([
-    'COMMUNE.cpg',
-    'COMMUNE.shp',
-    'COMMUNE.dbf',
-    'COMMUNE.prj',
-    'COMMUNE.shx',
-    'ARRONDISSEMENT_MUNICIPAL.cpg',
-    'ARRONDISSEMENT_MUNICIPAL.shp',
-    'ARRONDISSEMENT_MUNICIPAL.dbf',
-    'ARRONDISSEMENT_MUNICIPAL.prj',
-    'ARRONDISSEMENT_MUNICIPAL.shx',
-    'osm-communes-com.cpg',
-    'osm-communes-com.shp',
-    'osm-communes-com.dbf',
-    'osm-communes-com.prj',
-    'osm-communes-com.shx'
-  ])
-
+  const featuresFiles = await readSourcesFiles(COMBINED_SHAPEFILE_LIST)
   await buildContours(featuresFiles, 1000)
   await buildContours(featuresFiles, 100)
   await buildContours(featuresFiles, 50)

@@ -14,6 +14,7 @@ const ADMIN_EXPRESS_FILE = 'ADMIN-EXPRESS-COG_3-0__SHP__FRA_WM_2021-05-19.7z'
 
 const OSM_COMMUNES_BASE_URL = 'https://osm13.openstreetmap.fr/~cquest/openfla/export/'
 const OSM_COMMUNES_FILE = 'communes-20220101-shp.zip'
+const OSM_ARRONDISSEMENTS_FILE = 'arrondissements-municipaux-20220101-shp.zip'
 const OSM_COMMUNES_COM_FILE = 'communes-com-20220101-shp.zip'
 
 const DATASOURCES_TYPE = process.env.DATASOURCES_TYPE || 'admin-express'
@@ -54,7 +55,7 @@ async function decompressAdminExpressFiles() {
   })
 }
 
-async function decompressOsmCommunesComFiles(osm_file, file_pattern) {
+async function decompressOsmFiles(osm_file, file_pattern) {
   await decompress(
     getSourceFilePath(osm_file),
     SOURCES_PATH,
@@ -77,10 +78,12 @@ async function main() {
     await decompressAdminExpressFiles()
   } else {
     await downloadSourceFile(OSM_COMMUNES_BASE_URL + OSM_COMMUNES_FILE, OSM_COMMUNES_FILE)
-    await decompressOsmCommunesComFiles(OSM_COMMUNES_FILE, 'communes')
+    await decompressOsmFiles(OSM_COMMUNES_FILE, 'communes')
+    await downloadSourceFile(OSM_COMMUNES_BASE_URL + OSM_ARRONDISSEMENTS_FILE, OSM_ARRONDISSEMENTS_FILE)
+    await decompressOsmFiles(OSM_ARRONDISSEMENTS_FILE, 'arrondissements-municipaux')
   }
   await downloadSourceFile(OSM_COMMUNES_BASE_URL + OSM_COMMUNES_COM_FILE, OSM_COMMUNES_COM_FILE)
-  await decompressOsmCommunesComFiles(OSM_COMMUNES_COM_FILE, 'communes-com')
+  await decompressOsmFiles(OSM_COMMUNES_COM_FILE, 'communes-com')
 }
 
 main().catch(error => {

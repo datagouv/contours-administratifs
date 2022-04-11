@@ -16,10 +16,10 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@etalab/decoupage-administratif@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@etalab/decoupage-administratif/-/decoupage-administratif-1.1.0.tgz#564273d63efd07052cc11b6af515b78073fc431c"
-  integrity sha512-W12N4k/yo0yEVxz1MdWQdwruienVRMSUvNu7nRGK8OIWXIe0t5LPaLno2lahkkln/YElCtYcX6z8MwJp1Jny7A==
+"@etalab/decoupage-administratif@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@etalab/decoupage-administratif/-/decoupage-administratif-2.0.0.tgz#24ee640070c47e3c62883873c35450197fa5f78c"
+  integrity sha512-X+pQDnm0Sk8T5KPhT5kU9cLyMKc+LagK8ObYxyzVDoQapjLNZl9/KY2VFr42aw4LEiTnUfqCgNZc9lhHfi6shQ==
 
 "@keyv/sqlite@^3.0.0":
   version "3.0.0"

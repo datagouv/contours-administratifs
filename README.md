@@ -42,6 +42,15 @@ La préparation des sources inclut la récupération des données auprès des se
 yarn prepare-sources
 ```
 
+Il est possible de travailler avec exclusivement des sources OSM ou Admin Express pour la France, les DOM avec OSM pour les COM.
+Pour travailler en OSM pur, il faut faire
+
+```bash
+DATASOURCES_TYPE=osm yarn prepare-sources
+```
+
+ou ajouter DATASOURCES_TYPE=osm dans le fichier `.env` copié depuis le fichier modèle `.env.sample` 
+
 ### Génération des données + généralisation
 
 ```

@@ -22,8 +22,8 @@ curl -L https://github.com/etalab/decoupage-administratif/raw/master/sources/col
 # Si sortie non vide alors problème
 diff com_all.csv all_coms.txt
 
-ogr2ogr ../dist/osm-communes-com.shp com_all.geojson -lco ENCODING=UTF-8
+ogr2ogr ../dist/communes-com.shp com_all.geojson -lco ENCODING=UTF-8
 
 cd ../dist/
-zip communes-com-20220101-shp.zip osm_communes-com.*
+zip communes-com-20220101-shp.zip communes-com.*
 cd ../intermediate

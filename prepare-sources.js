@@ -11,7 +11,7 @@ const SOURCES_PATH = path.join(__dirname, 'sources')
 const ADMIN_EXPRESS_BASE_URL = 'http://files.opendatarchives.fr/professionnels.ign.fr/adminexpress/'
 const ADMIN_EXPRESS_FILE = 'ADMIN-EXPRESS-COG_3-0__SHP__FRA_WM_2021-05-19.7z'
 
-const OSM_COMMUNES_COM_BASE_URL = 'https://osm13.openstreetmap.fr/~cquest/openfla/export/'
+const OSM_COMMUNES_COM_BASE_URL = 'http://etalab-datasets.geo.data.gouv.fr/contours-administratifs/2022/shp/'
 const OSM_COMMUNES_COM_FILE = 'communes-com-20220101-shp.zip'
 
 function getSourceFilePath(fileName) {

@@ -64,3 +64,25 @@ typings/
 /dist
 .DS_Store
 *.sqlite
+
+# generate_com
+
+generate_com/intermediate/*.zip
+generate_com/intermediate/*.csv
+generate_com/intermediate/*.txt
+generate_com/intermediate/*.shp
+generate_com/intermediate/*.shx
+generate_com/intermediate/*.prj
+generate_com/intermediate/*.xml
+generate_com/intermediate/*.sbn
+generate_com/intermediate/*.sbx
+generate_com/intermediate/*.geojson
+generate_com/intermediate/*.cpg
+generate_com/intermediate/*.dbf
+
+generate_com/dist/*.cpg
+generate_com/dist/*.dbf
+generate_com/dist/*.prj
+generate_com/dist/*.shp
+generate_com/dist/*.shx
+generate_com/dist/*.zip

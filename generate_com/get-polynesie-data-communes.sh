@@ -4,7 +4,7 @@ wget -N $url
 unp loc-commune-associee.zip
 ogr2ogr "loc_commune_all.shp" \
         -dialect SQLite \
-        -sql "SELECT nom, code_com_i AS insee, '' AS wikipedia, Area(geometry, TRUE) / 10000 AS area_ha, geometry FROM (SELECT nom, code_com_i, ST_Union(geometry) AS geometry FROM loc_commune_associee GROUP BY nom, code_com_i) AS foo" \
+        -sql "SELECT nom, code_com_i AS insee, '' AS wikipedia, Area(geometry, TRUE) / 10000 AS surf_ha, geometry FROM (SELECT nom, code_com_i, ST_Union(geometry) AS geometry FROM loc_commune_associee GROUP BY nom, code_com_i) AS foo" \
         loc_commune_associee.shp;
 
 ogr2ogr -f CSV loc_commune_all.csv \

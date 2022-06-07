@@ -3,7 +3,7 @@ ogrmerge.py -f GeoJSON \
             -overwrite_ds \
             -single \
             -lco WRITE_NAME=NO \
-            -o com_all.geojson osm_communes_com_no_polynesie.shp taaf.geojson loc_commune_all.shp
+            -o com_all.geojson osm_communes_com_no_polynesie_and_nc.shp taaf.geojson nc.shp loc_commune_all.shp
 
 # Vérification
 ogr2ogr -f CSV com_all.csv \

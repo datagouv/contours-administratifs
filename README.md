@@ -11,7 +11,7 @@ Script permettant de générer les principaux contours administratifs selon diff
 - EPCI (calculés à partir de ADMIN EXPRESS)
 - Départements (calculés à partir de ADMIN EXPRESS)
 - Régions (calculés à partir de ADMIN EXPRESS)
-- Communes des collectivités d'outre-mer (OSM) à l'exception des îles de la Polynésie Française (données ["Géographie administrative de la Polynésie-française"](https://www.data.gouv.fr/fr/datasets/geographie-administrative-de-la-polynesie-francaise/))
+- Communes des collectivités d'outre-mer (OSM) à l'exception des îles de la Polynésie Française (données ["Géographie administrative de la Polynésie-française"](https://www.data.gouv.fr/fr/datasets/geographie-administrative-de-la-polynesie-francaise/)) et de la Nouvelle Calédonie (données [Limites des provinces et des communes de Nouvelle-Calédonie](https://georep-dtsi-sgt.opendata.arcgis.com/datasets/dtsi-sgt::limites-administratives-terrestres-1/about?layer=0))
 
 ### Niveaux de généralisation
 

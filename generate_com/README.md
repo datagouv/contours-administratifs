@@ -8,6 +8,7 @@ Voir la discussion sur https://github.com/etalab/contours-administratifs/issues/
 cd intermediate
 bash ../generate_com.sh
 bash ../generate_com_taaf_only.sh
+bash ../get-nouvelle-caledonie-data-communes.sh
 bash ../get-polynesie-data-communes.sh
 bash ../merge_all_com.sh
 cd ..
@@ -67,13 +68,19 @@ https://www.openstreetmap.org/relation/2186658#map=3/-30.37/59.94
   - Île Juan de Nova https://www.openstreetmap.org/way/159357927#map=14/-17.0548/42.7245
   - Île Tromelin https://www.openstreetmap.org/way/160030161#map=10/-15.8748/54.5457
 
-## Données polynésie
+## Données Nouvelle Calédonie
+
+Elles proviennent de https://georep-dtsi-sgt.opendata.arcgis.com/datasets/dtsi-sgt::limites-administratives-terrestres-1/about?layer=0
+
+On passe par le script `get-nouvelle-caledonie-data-communes.sh`
+
+## Données Polynésie Française
 
 Elles proviennent de https://www.data.gouv.fr/fr/datasets/geographie-administrative-de-la-polynesie-francaise/
 
 On passe par le script `get-polynesie-data-communes.sh`
 
-## Fusion données OSM COM hors TAAF et Polynésie Fr, données TAAF OSM et Polynésie - LO
+## Fusion données OSM COM (hors TAAF, Polynésie Française et Nouvelle Calédonie), données TAAF OSM, Polynésie - LO, Nouvelle Calédonie - LO
 
 Il faut avoir effectué les opérations précédentes pour pouvoir lancer le dernier script `merge_all_com.sh`
 

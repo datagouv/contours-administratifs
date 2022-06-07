@@ -20,11 +20,8 @@ ogr2ogr osm_communes_com.shp \
         -sql "select insee, nom, wikipedia, surf_ha, geometry from ( select insee, nom, wikipedia, surf_ha, geometry, ROW_NUMBER() OVER (PARTITION BY insee ORDER BY surf_ha ASC) as rn from com ) as a where rn = 1 AND insee != '975'" \
         -lco ENCODING=UTF-8 com.shp
 
-ogr2ogr osm_communes_com_no_polynesie.shp \
+ogr2ogr osm_communes_com_no_polynesie_and_nc.shp \
         -dialect SQLite \
-        -sql "SELECT * FROM osm_communes_com WHERE substr(insee, 1, 3) != '987'" \
+	-sql "SELECT * FROM osm_communes_com WHERE substr(insee, 1, 3) NOT IN ('987', '988')" \
         -lco ENCODING=UTF-8 osm_communes_com.shp
-#To delete
-#6075633 doublon 98739 car boundary
-#6063053 correspond à 98740 mal récup 
-#6063055 doublon 98740 car boundary
+

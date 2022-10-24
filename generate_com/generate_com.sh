@@ -1,4 +1,4 @@
-query-overpass ../overpass_com.ql >| com.geojson
+query-overpass ../overpass_com.overpassql >| com.geojson
 
 # SELECT json_each(t.tags) FROM com AS t;
 

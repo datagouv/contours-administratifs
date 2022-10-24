@@ -86,4 +86,4 @@ Il faut avoir effectué les opérations précédentes pour pouvoir lancer le der
 
 ## Script pouvant avoir une utilité.
 
-Nous avons à un moment, explorer comment obtenir les terres émergées qui sont à l'intérieur d'une limite administrative maritime dans OpenStreetMap. Nous avons voulu garder la requête dans le fichier `overpass_com_fix_demo.ql`. Il est exécutable avec la commande `query-overpass overpass_com.ql`
+Nous avons à un moment, explorer comment obtenir les terres émergées qui sont à l'intérieur d'une limite administrative maritime dans OpenStreetMap. Nous avons voulu garder la requête dans le fichier `overpass_com_fix_demo.overpassql`. Il est exécutable avec la commande `query-overpass overpass_com.overpassql`

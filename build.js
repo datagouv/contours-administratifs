@@ -9,7 +9,7 @@ const {truncate, feature} = require('@turf/turf')
 const extractFeaturesFromShapefiles = require('./lib/extract-features-from-shapefiles')
 const mergeFeatures = require('./lib/merge-features')
 const composeFeatures = require('./lib/compose-features')
-const {communes, communesAssocieesDeleguees, epci, departements, regions, communesIndexes, communesAssocieesDelegueesIndexes, epciIndexes} = require('./lib/decoupage-administratif')
+const {communes, communesAssocieesDeleguees, epci, departements, regions, communesIndexes, epciIndexes} = require('./lib/decoupage-administratif')
 
 const SOURCES_PATH = join(__dirname, 'sources')
 const DIST_PATH = join(__dirname, 'dist')
@@ -80,7 +80,6 @@ async function computeCommunesAssocieesDelegueesIndex(featuresFiles, interval) {
 
   communesAssocieesDeleguees.forEach(commune => {
     const geometries = []
-    const codes = []
 
     if (geometriesIndex[commune.code]) {
       geometries.push(geometriesIndex[commune.code])
@@ -104,7 +103,6 @@ async function computeCommunesAssocieesDelegueesIndex(featuresFiles, interval) {
     .fromPairs()
     .value()
 }
-
 
 async function writeLayer(features, interval, layerName) {
   const precision = getPrecision(interval)
@@ -267,24 +265,12 @@ async function buildContours(featuresFiles, interval) {
   await buildAndWriteRegions(communesIndex, interval)
 }
 
-async function buildContours(featuresFiles, interval) {
-  console.log(`  Extraction et simplification des communes : ${interval}m`)
-  const communesIndex = await computeCommunesIndex(featuresFiles, interval)
-
-  await buildAndWriteCommunes(communesIndex, interval)
-  await buildAndWriteEPCI(communesIndex, interval)
-  await buildAndWriteDepartements(communesIndex, interval)
-  await buildAndWriteRegions(communesIndex, interval)
-}
-
 async function buildContoursCommunesAssocieesDeleguees(featuresFiles, interval) {
   console.log(`  Extraction et simplification des communes associées et déléguées: ${interval}m`)
   const communesAssocieesDelegueesIndex = await computeCommunesAssocieesDelegueesIndex(featuresFiles, interval)
 
   await buildAndWriteCommunesAssocieesDeleguees(communesAssocieesDelegueesIndex, interval)
 }
-
-
 
 async function readSourcesFiles(fileNames) {
   return bluebird.mapSeries(fileNames, async fileName => {

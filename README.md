@@ -116,6 +116,23 @@ type: String (0.0)
 
 La colonne type indique soit `mairie`, soit `memorial`, soit `centre`
 
+#### Communes associées et déléguées
+
+La couche commune contient en fait à la fois les [communes associées](https://www.insee.fr/fr/metadonnees/definition/c2297) et [les communes déléguées](https://www.insee.fr/fr/metadonnees/definition/c2298)
+
+```
+ogrinfo -so -al /vsigzip/./dist/communes-associees-deleguees-5m.geojson.gz
+```
+
+```
+code: String (0.0)
+nom: String (0.0)
+type: String (0.0)
+departement: String (0.0)
+region: String (0.0)
+epci: String (0.0)
+```
+
 #### EPCI
 
 ```

@@ -217,20 +217,8 @@ async function buildAndWriteCommunesAssocieesDeleguees(communesAssocieesDeleguee
       region: commune.region
     }
 
-    if (['75056', '13055', '69123'].includes(commune.code)) {
-      properties.plm = true
-    }
-
-    if (commune.commune) {
-      properties.commune = commune.commune
-    }
-
-    if (commune.code in epciIndexes.commune) {
-      properties.epci = epciIndexes.commune[commune.code].code
-    }
-
-    if (commune.collectiviteOutremer) {
-      properties.collectiviteOutremer = commune.collectiviteOutremer.code
+    if (commune.chefLieu in epciIndexes.commune) {
+      properties.epci = epciIndexes.commune[commune.chefLieu].code
     }
 
     return feature(geometry, properties)

@@ -9,7 +9,7 @@ const {truncate, feature} = require('@turf/turf')
 const extractFeaturesFromShapefiles = require('./lib/extract-features-from-shapefiles')
 const mergeFeatures = require('./lib/merge-features')
 const composeFeatures = require('./lib/compose-features')
-const {communes, epci, departements, regions, communesIndexes, epciIndexes} = require('./lib/decoupage-administratif')
+const {communes, communesAssocieesDeleguees, epci, departements, regions, communesIndexes, epciIndexes} = require('./lib/decoupage-administratif')
 
 const SOURCES_PATH = join(__dirname, 'sources')
 const DIST_PATH = join(__dirname, 'dist')
@@ -20,7 +20,7 @@ async function getSimplifiedGeometries(featuresFiles, interval) {
   return chain(readFeatures)
     .map(({properties: p, geometry}) => {
       return [
-        p.INSEE_ARM || p.INSEE_COM || p.insee,
+        p.INSEE_ARM || p.INSEE_CAD || p.INSEE_COM || p.insee,
         geometry
       ]
     })
@@ -55,6 +55,36 @@ async function computeCommunesIndex(featuresFiles, interval) {
 
     if (codes.length > 0) {
       console.log(`Contours des codes ${codes.join(',')} fusionnés en ${commune.code}`)
+    }
+
+    if (geometries.length === 0) {
+      throw new Error(`Aucune géométrie pour construire le contour de la commune ${commune.code}`)
+    }
+
+    for (const geometry of geometries) {
+      unmergedFeatures.push(feature(geometry, {code: commune.code}))
+    }
+  })
+
+  const mergedFeatures = await mergeFeatures(unmergedFeatures, 'code')
+
+  return chain(mergedFeatures)
+    .map(f => [f.properties.code, f.geometry])
+    .fromPairs()
+    .value()
+}
+
+async function computeCommunesAssocieesDelegueesIndex(featuresFiles, interval) {
+  const geometriesIndex = await getSimplifiedGeometries(featuresFiles, interval)
+  const unmergedFeatures = []
+
+  communesAssocieesDeleguees.forEach(commune => {
+    const geometries = []
+
+    if (geometriesIndex[commune.code]) {
+      geometries.push(geometriesIndex[commune.code])
+    } else {
+      console.log(`Géométrie non trouvée pour la commune ${commune.code}`)
     }
 
     if (geometries.length === 0) {
@@ -175,6 +205,28 @@ async function buildAndWriteCommunes(communesIndex, interval) {
   await writeLayer(communesFeatures, interval, 'communes')
 }
 
+async function buildAndWriteCommunesAssocieesDeleguees(communesAssocieesDelegueesIndex, interval) {
+  const communesFeatures = communesAssocieesDeleguees.map(commune => {
+    const geometry = communesAssocieesDelegueesIndex[commune.code]
+
+    const properties = {
+      code: commune.code,
+      nom: commune.nom,
+      type: commune.type,
+      departement: commune.departement,
+      region: commune.region
+    }
+
+    if (commune.chefLieu in epciIndexes.commune) {
+      properties.epci = epciIndexes.commune[commune.chefLieu].code
+    }
+
+    return feature(geometry, properties)
+  })
+
+  await writeLayer(communesFeatures, interval, 'communes-associees-deleguees')
+}
+
 function getPrecision(interval) {
   if (interval < 10) {
     return 6
@@ -199,6 +251,13 @@ async function buildContours(featuresFiles, interval) {
   await buildAndWriteEPCI(communesIndex, interval)
   await buildAndWriteDepartements(communesIndex, interval)
   await buildAndWriteRegions(communesIndex, interval)
+}
+
+async function buildContoursCommunesAssocieesDeleguees(featuresFiles, interval) {
+  console.log(`  Extraction et simplification des communes associées et déléguées: ${interval}m`)
+  const communesAssocieesDelegueesIndex = await computeCommunesAssocieesDelegueesIndex(featuresFiles, interval)
+
+  await buildAndWriteCommunesAssocieesDeleguees(communesAssocieesDelegueesIndex, interval)
 }
 
 async function readSourcesFiles(fileNames) {
@@ -228,6 +287,18 @@ async function main() {
     'osm-communes-com.shx'
   ])
 
+  const featuresCommunesAssocieesDelegueesFiles = await readSourcesFiles([
+    'COMMUNE_ASSOCIEE_OU_DELEGUEE.cpg',
+    'COMMUNE_ASSOCIEE_OU_DELEGUEE.shp',
+    'COMMUNE_ASSOCIEE_OU_DELEGUEE.dbf',
+    'COMMUNE_ASSOCIEE_OU_DELEGUEE.prj',
+    'COMMUNE_ASSOCIEE_OU_DELEGUEE.shx'
+  ])
+
+  await buildContoursCommunesAssocieesDeleguees(featuresCommunesAssocieesDelegueesFiles, 1000)
+  await buildContoursCommunesAssocieesDeleguees(featuresCommunesAssocieesDelegueesFiles, 100)
+  await buildContoursCommunesAssocieesDeleguees(featuresCommunesAssocieesDelegueesFiles, 50)
+  await buildContoursCommunesAssocieesDeleguees(featuresCommunesAssocieesDelegueesFiles, 5)
   await buildContours(featuresFiles, 1000)
   await buildContours(featuresFiles, 100)
   await buildContours(featuresFiles, 50)

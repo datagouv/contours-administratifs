@@ -7,6 +7,7 @@ Script permettant de générer les principaux contours administratifs selon diff
 ### Types de contours
 
 - Communes (ADMIN EXPRESS)
+- Communes associées ou déléguées (ADMIN EXPRESS)
 - Arrondissements municipaux (ADMIN EXPRESS)
 - EPCI (calculés à partir de ADMIN EXPRESS)
 - Départements (calculés à partir de ADMIN EXPRESS)
@@ -56,6 +57,7 @@ Nous générons des tuiles vectorielles depuis les fichiers de contour. Elles so
 Elles contiennent :
 
 - les communes
+- les communes déléguées ou associées
 - les EPCI
 - les départements
 - les régions
@@ -66,13 +68,14 @@ Nous ne cherchons pas à intégrer toutes les couches administratives possibles 
 Pour savoir à quelles zooms les couches sont disponibles, nous utilisons les zooms suivants :
 
 
-|Nom couches |Z3 |Z4 |Z5 |Z6 |Z7 |Z8 |Z9 |Z10|Z11|Z12|
-|------------|---|---|---|---|---|---|---|---|---|---|
-|regions     |V  |V  |V  |V  |V  |V  |V  |V  |V  |V  |
-|departements|V  |V  |V  |V  |V  |V  |V  |V  |V  |V  |
-|epcis       |V  |V  |V  |V  |V  |V  |V  |V  |V  |V  |
-|communes    |   |   |   |   |   |V  |V  |V  |V  |V  |
-|mairies     |   |   |   |   |   |V  |V  |V  |V  |V  |
+|Nom couches                  |Z3 |Z4 |Z5 |Z6 |Z7 |Z8 |Z9 |Z10|Z11|Z12|
+|-----------------------------|---|---|---|---|---|---|---|---|---|---|
+|regions                      |V  |V  |V  |V  |V  |V  |V  |V  |V  |V  |
+|departements                 |V  |V  |V  |V  |V  |V  |V  |V  |V  |V  |
+|epcis                        |V  |V  |V  |V  |V  |V  |V  |V  |V  |V  |
+|communes                     |   |   |   |   |   |V  |V  |V  |V  |V  |
+|communes_associees_deleguees |   |   |   |   |   |V  |V  |V  |V  |V  |
+|mairies                      |   |   |   |   |   |V  |V  |V  |V  |V  |
 
 Il est possible par un mécanisme d'overzoom d'accéder aux tuiles de zoom 3 au zoom 0, 1 ou 2 ou pour un zoom de niveau 16, d'accéder aux tuiles de niveau 12.
 

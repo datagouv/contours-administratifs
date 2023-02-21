@@ -49,6 +49,7 @@ async function computeCommunesIndex(featuresFiles, interval) {
         if (geometry) {
           geometries.push(geometry)
           codes.push(ancienCode)
+          console.log(commune.code, ancienCode)
         }
       }
     }
@@ -295,10 +296,12 @@ async function main() {
     'COMMUNE_ASSOCIEE_OU_DELEGUEE.shx'
   ])
 
-  await buildContoursCommunesAssocieesDeleguees(featuresCommunesAssocieesDelegueesFiles, 1000)
-  await buildContoursCommunesAssocieesDeleguees(featuresCommunesAssocieesDelegueesFiles, 100)
-  await buildContoursCommunesAssocieesDeleguees(featuresCommunesAssocieesDelegueesFiles, 50)
-  await buildContoursCommunesAssocieesDeleguees(featuresCommunesAssocieesDelegueesFiles, 5)
+  if (process.env.COMMUNES_ASSOCIEES_DELEGUEES) {
+    await buildContoursCommunesAssocieesDeleguees(featuresCommunesAssocieesDelegueesFiles, 1000)
+    await buildContoursCommunesAssocieesDeleguees(featuresCommunesAssocieesDelegueesFiles, 100)
+    await buildContoursCommunesAssocieesDeleguees(featuresCommunesAssocieesDelegueesFiles, 50)
+    await buildContoursCommunesAssocieesDeleguees(featuresCommunesAssocieesDelegueesFiles, 5)
+  }
   await buildContours(featuresFiles, 1000)
   await buildContours(featuresFiles, 100)
   await buildContours(featuresFiles, 50)

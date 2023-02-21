@@ -50,6 +50,12 @@ yarn prepare-sources
 yarn build
 ```
 
+Si vous voulez générer les communes associées ou déléguées, vous devez executer la même commande avec la variable d'environnement `COMMUNES_ASSOCIEES_DELEGUEES`
+
+```
+COMMUNES_ASSOCIEES_DELEGUEES=YES yarn run build
+```
+
 ### Mise à disposition des sources sous forme de tuiles vecteur
 
 Nous générons des tuiles vectorielles depuis les fichiers de contour. Elles sont servies depuis https://openmaptiles.geo.data.gouv.fr/data/decoupage-administratif/#4.63/46.18/-1.66

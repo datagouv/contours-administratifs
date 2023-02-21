@@ -4,10 +4,10 @@ cd data
 
 rm chflieu_*.geojson
 
-# Mairies communes métropole sans les communes mortes pour la France
+# Mairies communes métropole sans les communes mortes pour la France + correction manuelle pour passage 2022 à 2023
 ogr2ogr -f GeoJSON \
         -dialect SQLite \
-        -sql "SELECT \"INSEE_COM\" AS commune, \"COMMUNE\".\"NOM\" AS nom, CASE WHEN chf.geometry IS NULL THEN 'centre' ELSE 'mairie' END AS type, CASE WHEN chf.geometry IS NULL THEN PointOnSurface(\"COMMUNE\".geometry) ELSE chf.geometry END AS geometry FROM \"COMMUNE\" LEFT JOIN 'CHFLIEU_COMMUNE.shp'.\"CHFLIEU_COMMUNE\" chf ON chf.\"ID_COM\" = \"COMMUNE\".\"ID\" WHERE \"INSEE_COM\" NOT IN ('55189', '55039', '55050', '55239', '55307', '55139')" \
+        -sql "SELECT CASE WHEN \"INSEE_COM\" = '27058' THEN '27676' else \"INSEE_COM\" END AS commune, \"COMMUNE\".\"NOM\" AS nom, CASE WHEN chf.geometry IS NULL THEN 'centre' ELSE 'mairie' END AS type, CASE WHEN chf.geometry IS NULL THEN PointOnSurface(\"COMMUNE\".geometry) ELSE chf.geometry END AS geometry FROM \"COMMUNE\" LEFT JOIN 'CHFLIEU_COMMUNE.shp'.\"CHFLIEU_COMMUNE\" chf ON chf.\"ID_COM\" = \"COMMUNE\".\"ID\" WHERE \"INSEE_COM\" NOT IN ('55189', '55039', '55050', '55239', '55307', '55139', '01039', '02077', '09255', '16140', '50015', '51063', '51637', '71492', '85037', '85053')" \
         chflieu_commune.geojson \
         COMMUNE.shp \
         -lco RFC7946=YES \

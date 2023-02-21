@@ -46,7 +46,7 @@ yarn prepare-sources
 
 ### Génération des données + généralisation
 
-```
+```bash
 yarn build
 ```
 
@@ -54,6 +54,22 @@ Si vous voulez générer les communes associées ou déléguées, vous devez exe
 
 ```
 COMMUNES_ASSOCIEES_DELEGUEES=YES yarn run build
+```
+
+Pour compresser les fichiers en gz avant envoi, faire
+
+```bash
+cd dist
+for i in *.geojson;
+  do gzip -k $i;
+done;
+cd ..
+```
+
+Pour déployer, faire en changeant `alias_ssh:/chemin_dossier/annee/geojson/`
+
+```bash
+scp dist/*.geojson* alias_ssh:/chemin_dossier/annee/geojson/
 ```
 
 ### Mise à disposition des sources sous forme de tuiles vecteur

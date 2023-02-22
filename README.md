@@ -1,5 +1,7 @@
 # contours-administratifs
 
+WARNING: Les données produites ont pu être déduites de l'édition AdminExpress 2022. Les communes associées et déléguées sont tirées directement du produit Admin Express COG. Ce dernier n'est pas encore sorti pour 2023. Nous les intégrerons dès publication de l'IGN.
+
 Script permettant de générer les principaux contours administratifs selon différents niveaux de généralisation.
 
 ## Présentation

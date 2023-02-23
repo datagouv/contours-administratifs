@@ -1,5 +1,7 @@
 # contours-administratifs
 
+**WARNING**: Les données produites ont pu être déduites de l'édition AdminExpress 2022. Les communes associées et déléguées sont tirées directement du produit Admin Express COG. Ce dernier n'est pas encore sorti pour 2023. Nous les intégrerons dès publication de l'IGN.
+
 Script permettant de générer les principaux contours administratifs selon différents niveaux de généralisation.
 
 ## Présentation
@@ -46,8 +48,30 @@ yarn prepare-sources
 
 ### Génération des données + généralisation
 
-```
+```bash
 yarn build
+```
+
+Si vous voulez générer les communes associées ou déléguées, vous devez executer la même commande avec la variable d'environnement `COMMUNES_ASSOCIEES_DELEGUEES`
+
+```
+COMMUNES_ASSOCIEES_DELEGUEES=YES yarn run build
+```
+
+Pour compresser les fichiers en gz avant envoi, faire
+
+```bash
+cd dist
+for i in *.geojson;
+  do gzip -k $i;
+done;
+cd ..
+```
+
+Pour déployer, faire en changeant `alias_ssh:/chemin_dossier/annee/geojson/`
+
+```bash
+scp dist/*.geojson* alias_ssh:/chemin_dossier/annee/geojson/
 ```
 
 ### Mise à disposition des sources sous forme de tuiles vecteur

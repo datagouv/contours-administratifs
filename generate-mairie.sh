@@ -1,13 +1,13 @@
-wget -N -P data/ http://files.opendatarchives.fr/professionnels.ign.fr/adminexpress/ADMIN-EXPRESS-COG_3-1__SHP__FRA_WM_2022-04-15.7z
+wget -N -P data/ 'https://wxs.ign.fr/x02uy2aiwjo9bm8ce5plwqmr/telechargement/prepackage/ADMINEXPRESS-COG_SHP_WGS84G_PACK_2023-05-04$ADMIN-EXPRESS-COG_3-2__SHP_WGS84G_FRA_2023-05-03/file/ADMIN-EXPRESS-COG_3-2__SHP_WGS84G_FRA_2023-05-03.7z'
 cd data
-7z e ADMIN-EXPRESS-COG_3-1__SHP__FRA_WM_2022-04-15.7z CHFLIEU_COMMUNE.* COMMUNE.* CHFLIEU_ARRONDISSEMENT_MUNICIPAL.* ARRONDISSEMENT_MUNICIPAL.* -r -aoa
+7z e ADMIN-EXPRESS-COG_3-2__SHP_WGS84G_FRA_2023-05-03.7z CHFLIEU_COMMUNE.* COMMUNE.* CHFLIEU_ARRONDISSEMENT_MUNICIPAL.* ARRONDISSEMENT_MUNICIPAL.* -r -aoa
 
 rm chflieu_*.geojson
 
 # Mairies communes métropole sans les communes mortes pour la France + correction manuelle pour passage 2022 à 2023
 ogr2ogr -f GeoJSON \
         -dialect SQLite \
-        -sql "SELECT CASE WHEN \"INSEE_COM\" = '27058' THEN '27676' else \"INSEE_COM\" END AS commune, \"COMMUNE\".\"NOM\" AS nom, CASE WHEN chf.geometry IS NULL THEN 'centre' ELSE 'mairie' END AS type, CASE WHEN chf.geometry IS NULL THEN PointOnSurface(\"COMMUNE\".geometry) ELSE chf.geometry END AS geometry FROM \"COMMUNE\" LEFT JOIN 'CHFLIEU_COMMUNE.shp'.\"CHFLIEU_COMMUNE\" chf ON chf.\"ID_COM\" = \"COMMUNE\".\"ID\" WHERE \"INSEE_COM\" NOT IN ('55189', '55039', '55050', '55239', '55307', '55139', '01039', '02077', '09255', '16140', '50015', '51063', '51637', '71492', '85037', '85053')" \
+        -sql "SELECT CASE WHEN \"COMMUNE\".\"INSEE_COM\" = '27058' THEN '27676' else \"COMMUNE\".\"INSEE_COM\" END AS commune, \"COMMUNE\".\"NOM\" AS nom, CASE WHEN chf.geometry IS NULL THEN 'centre' ELSE 'mairie' END AS type, CASE WHEN chf.geometry IS NULL THEN PointOnSurface(\"COMMUNE\".geometry) ELSE chf.geometry END AS geometry FROM \"COMMUNE\" LEFT JOIN 'CHFLIEU_COMMUNE.shp'.\"CHFLIEU_COMMUNE\" chf ON chf.\"ID_COM\" = \"COMMUNE\".\"ID\" WHERE \"COMMUNE\".\"INSEE_COM\" NOT IN ('55189', '55039', '55050', '55239', '55307', '55139', '01039', '02077', '09255', '16140', '50015', '51063', '51637', '71492', '85037', '85053')" \
         chflieu_commune.geojson \
         COMMUNE.shp \
         -lco RFC7946=YES \
@@ -16,7 +16,7 @@ ogr2ogr -f GeoJSON \
 # Mairies Arrondissements
 ogr2ogr -f GeoJSON \
         -dialect SQLite \
-        -sql "SELECT \"INSEE_ARM\" AS commune, \"ARRONDISSEMENT_MUNICIPAL\".\"NOM\" AS nom, 'mairie' AS type, chf.geometry AS geometry FROM \"ARRONDISSEMENT_MUNICIPAL\" LEFT JOIN 'CHFLIEU_ARRONDISSEMENT_MUNICIPAL.shp'.\"CHFLIEU_ARRONDISSEMENT_MUNICIPAL\" chf ON chf.\"ID_COM\" = \"ARRONDISSEMENT_MUNICIPAL\".\"ID\"" \
+        -sql "SELECT \"ARRONDISSEMENT_MUNICIPAL\".\"INSEE_ARM\" AS commune, \"ARRONDISSEMENT_MUNICIPAL\".\"NOM\" AS nom, 'mairie' AS type, chf.geometry AS geometry FROM \"ARRONDISSEMENT_MUNICIPAL\" LEFT JOIN 'CHFLIEU_ARRONDISSEMENT_MUNICIPAL.shp'.\"CHFLIEU_ARRONDISSEMENT_MUNICIPAL\" chf ON chf.\"ID_ARM\" = \"ARRONDISSEMENT_MUNICIPAL\".\"ID\"" \
         chflieu_arrondissement_municipal.geojson \
         ARRONDISSEMENT_MUNICIPAL.shp \
         -lco RFC7946=YES \
@@ -41,8 +41,8 @@ jq -c -r --slurp . memorial_*.geojson \
   | jq -c -r '{"type":"FeatureCollection","features": .}' \
   >| communes_mortes_pour_la_france.geojson
 
-wget http://etalab-datasets.geo.data.gouv.fr/contours-administratifs/2022/shp/communes-com-20220101-shp.zip
-unzip communes-com-20220101-shp.zip
+wget -N http://etalab-datasets.geo.data.gouv.fr/contours-administratifs/2022/shp/communes-com-20220101-shp.zip
+unzip -o communes-com-20220101-shp.zip
 
 ogr2ogr -f GeoJSON \
         -dialect SQLite \
@@ -52,7 +52,7 @@ ogr2ogr -f GeoJSON \
         -lco RFC7946=YES \
         -lco WRITE_NAME=NO
 
-ogrmerge.py -overwrite_ds\
+ogrmerge.py -overwrite_ds \
            -o mairies.geojson \
             -single \
             chflieu_commune.geojson \

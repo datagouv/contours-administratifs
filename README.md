@@ -55,7 +55,8 @@ yarn build
 Si vous voulez générer les communes associées ou déléguées, vous devez executer la même commande avec la variable d'environnement `COMMUNES_ASSOCIEES_DELEGUEES`
 
 ```
-COMMUNES_ASSOCIEES_DELEGUEES=YES yarn run build
+export COMMUNES_ASSOCIEES_DELEGUEES=YES
+yarn run build
 ```
 
 Pour compresser les fichiers en gz avant envoi, faire

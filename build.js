@@ -9,7 +9,7 @@ const {truncate, feature} = require('@turf/turf')
 const extractFeaturesFromShapefiles = require('./lib/extract-features-from-shapefiles')
 const mergeFeatures = require('./lib/merge-features')
 const composeFeatures = require('./lib/compose-features')
-const {communes, communesAssocieesDeleguees, epci, departements, regions, communesIndexes, epciIndexes} = require('./lib/decoupage-administratif')
+const {communes, communesAssocieesDeleguees, epci, ept, departements, regions, communesIndexes, epciIndexes, eptIndexes} = require('./lib/decoupage-administratif')
 
 const SOURCES_PATH = join(__dirname, 'sources')
 const DIST_PATH = join(__dirname, 'dist')
@@ -136,6 +136,22 @@ async function buildAndWriteEPCI(communesIndex, interval) {
   await writeLayer(features, interval, 'epci')
 }
 
+async function buildAndWriteEPT(communesIndex, interval) {
+  const features = await composeFeatures(
+    ept.map(e => ({
+      id: e.code,
+      members: e.membres.map(m => m.code),
+      properties: {
+        code: e.code,
+        nom: e.nom
+      }
+    })),
+    communesIndex
+  )
+
+  await writeLayer(features, interval, 'ept')
+}
+
 async function buildAndWriteDepartements(communesIndex, interval) {
   const features = await composeFeatures(
     departements.map(d => ({
@@ -196,6 +212,10 @@ async function buildAndWriteCommunes(communesIndex, interval) {
       properties.epci = epciIndexes.commune[commune.code].code
     }
 
+    if (commune.code in eptIndexes.commune) {
+      properties.ept = eptIndexes.commune[commune.code].code
+    }
+
     if (commune.collectiviteOutremer) {
       properties.collectiviteOutremer = commune.collectiviteOutremer.code
     }
@@ -250,6 +270,7 @@ async function buildContours(featuresFiles, interval) {
 
   await buildAndWriteCommunes(communesIndex, interval)
   await buildAndWriteEPCI(communesIndex, interval)
+  await buildAndWriteEPT(communesIndex, interval)
   await buildAndWriteDepartements(communesIndex, interval)
   await buildAndWriteRegions(communesIndex, interval)
 }

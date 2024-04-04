@@ -1,6 +1,9 @@
-wget -N -P data/ 'https://data.geopf.fr/telechargement/download/ADMIN-EXPRESS/ADMIN-EXPRESS_3-2__SHP_WGS84G_FRA_2024-01-22/ADMIN-EXPRESS_3-2__SHP_WGS84G_FRA_2024-01-22.7z'
+url_admin_express='https://data.geopf.fr/telechargement/download/ADMIN-EXPRESS-COG/ADMIN-EXPRESS-COG_3-2__SHP_WGS84G_FRA_2024-02-22/ADMIN-EXPRESS-COG_3-2__SHP_WGS84G_FRA_2024-02-22.7z'
+filename=$(basename $url_admin_express)
+wget -N -P data/ "${url_admin_express}"
+
 cd data
-7z e ADMIN-EXPRESS_3-2__SHP_WGS84G_FRA_2024-01-22.7z CHFLIEU_COMMUNE.* COMMUNE.* CHFLIEU_ARRONDISSEMENT_MUNICIPAL.* ARRONDISSEMENT_MUNICIPAL.* -r -aoa
+7z e $filename CHFLIEU_COMMUNE.* COMMUNE.* CHFLIEU_ARRONDISSEMENT_MUNICIPAL.* ARRONDISSEMENT_MUNICIPAL.* -r -aoa
 
 rm chflieu_*.geojson
 

@@ -1,7 +1,5 @@
 # contours-administratifs
 
-**WARNING**: Les données produites ont pu être déduites de l'édition AdminExpress 2022. Les communes associées et déléguées sont tirées directement du produit Admin Express COG. Ce dernier n'est pas encore sorti pour 2023. Nous les intégrerons dès publication de l'IGN.
-
 Script permettant de générer les principaux contours administratifs selon différents niveaux de généralisation.
 
 ## Présentation
@@ -14,7 +12,7 @@ Script permettant de générer les principaux contours administratifs selon diff
 - EPCI (calculés à partir de ADMIN EXPRESS)
 - Départements (calculés à partir de ADMIN EXPRESS)
 - Régions (calculés à partir de ADMIN EXPRESS)
-- Mairies (déduites de ADMIN EXpress sauf pour les mairies mortes pour la France ou centre du mémorial utilisé et centroïde pour les COM où la position des mairies n'est pas exploitable dans les sources trouvées à ce jour)
+- Mairies (déduites de ADMIN EXPRESS sauf pour les mairies mortes pour la France ou centre du mémorial utilisé et centroïde pour les COM où la position des mairies n'est pas exploitable dans les sources trouvées à ce jour)
 - Communes des collectivités d'outre-mer (OSM) à l'exception des îles de la Polynésie Française (données ["Géographie administrative de la Polynésie-française"](https://www.data.gouv.fr/fr/datasets/geographie-administrative-de-la-polynesie-francaise/)) et de la Nouvelle Calédonie (données [Limites des provinces et des communes de Nouvelle-Calédonie](https://georep-dtsi-sgt.opendata.arcgis.com/datasets/dtsi-sgt::limites-administratives-terrestres-1/about?layer=0))
 
 ### Niveaux de généralisation

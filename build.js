@@ -302,6 +302,7 @@ async function main() {
     await buildContoursCommunesAssocieesDeleguees(featuresCommunesAssocieesDelegueesFiles, 50)
     await buildContoursCommunesAssocieesDeleguees(featuresCommunesAssocieesDelegueesFiles, 5)
   }
+
   await buildContours(featuresFiles, 1000)
   await buildContours(featuresFiles, 100)
   await buildContours(featuresFiles, 50)

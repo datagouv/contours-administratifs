@@ -1,4 +1,4 @@
-url_admin_express='https://data.geopf.fr/telechargement/download/ADMIN-EXPRESS-COG/ADMIN-EXPRESS-COG_3-2__SHP_WGS84G_FRA_2024-02-22/ADMIN-EXPRESS-COG_3-2__SHP_WGS84G_FRA_2024-02-22.7z'
+url_admin_express='https://data.geopf.fr/telechargement/download/ADMIN-EXPRESS-COG/ADMIN-EXPRESS-COG_3-2__SHP_WGS84G_FRA_2025-04-02/ADMIN-EXPRESS-COG_3-2__SHP_WGS84G_FRA_2025-04-02.7z'
 filename=$(basename $url_admin_express)
 wget -N -P data/ "${url_admin_express}"
 
@@ -10,7 +10,7 @@ rm chflieu_*.geojson
 # Mairies communes métropole sans les communes mortes pour la France + correction manuelle pour passage 2022 à 2023
 ogr2ogr -f GeoJSON \
         -dialect SQLite \
-        -sql "SELECT \"COMMUNE\".\"INSEE_COM\" AS commune, \"COMMUNE\".\"NOM\" AS nom, CASE WHEN chf.geometry IS NULL THEN 'centre' ELSE 'mairie' END AS type, CASE WHEN chf.geometry IS NULL THEN PointOnSurface(\"COMMUNE\".geometry) ELSE chf.geometry END AS geometry FROM \"COMMUNE\" LEFT JOIN 'CHFLIEU_COMMUNE.shp'.\"CHFLIEU_COMMUNE\" chf ON chf.\"ID_COM\" = \"COMMUNE\".\"ID\" WHERE \"COMMUNE\".\"INSEE_COM\" NOT IN ('55189', '55039', '55050', '55239', '55307', '55139', '01039', '02077', '09255', '16140', '50015', '51063', '51637', '71492', '85037', '85053') AND \"COMMUNE\".\"INSEE_COM\" <> '95282'" \
+        -sql "SELECT \"COMMUNE\".\"INSEE_COM\" AS commune, \"COMMUNE\".\"NOM\" AS nom, CASE WHEN chf.geometry IS NULL THEN 'centre' ELSE 'mairie' END AS type, CASE WHEN chf.geometry IS NULL THEN PointOnSurface(\"COMMUNE\".geometry) ELSE chf.geometry END AS geometry FROM \"COMMUNE\" LEFT JOIN 'CHFLIEU_COMMUNE.shp'.\"CHFLIEU_COMMUNE\" chf ON chf.\"ID_COM\" = \"COMMUNE\".\"ID\" WHERE \"COMMUNE\".\"INSEE_COM\" NOT IN ('55189', '55039', '55050', '55239', '55307', '55139', '01039', '02077', '09255', '16140', '50015', '51063', '51637', '71492', '85037', '85053')" \
         chflieu_commune.geojson \
         COMMUNE.shp \
         -lco RFC7946=YES \

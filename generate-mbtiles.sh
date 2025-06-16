@@ -40,8 +40,8 @@ tippecanoe -l mairies --generate-ids --no-tile-stats -r1 -Z8 -z12 -f -o dist/mai
 
 echo "Merge des tuiles vectorielles"
 if [ "$COMMUNES_ASSOCIEES_DELEGUEES" != "NO" ]; then
-    tile-join --attribution=Etalab --name=decoupage-administratif --no-tile-size-limit --no-tile-stats -f --output dist/decoupage-administratif.mbtiles dist/mairies.mbtiles dist/communes.mbtiles dist/communes-associees-deleguees.mbtiles dist/epcis.mbtiles dist/departements.mbtiles dist/regions.mbtiles;
+    tile-join --attribution="© DINUM (data.gouv.fr)" --name=decoupage-administratif --no-tile-size-limit --no-tile-stats -f --output dist/decoupage-administratif.mbtiles dist/mairies.mbtiles dist/communes.mbtiles dist/communes-associees-deleguees.mbtiles dist/epcis.mbtiles dist/departements.mbtiles dist/regions.mbtiles;
 else
-    tile-join --attribution=Etalab --name=decoupage-administratif --no-tile-size-limit --no-tile-stats -f --output dist/decoupage-administratif.mbtiles dist/mairies.mbtiles dist/communes.mbtiles dist/epcis.mbtiles dist/departements.mbtiles dist/regions.mbtiles;
+    tile-join --attribution="© DINUM (data.gouv.fr)" --name=decoupage-administratif --no-tile-size-limit --no-tile-stats -f --output dist/decoupage-administratif.mbtiles dist/mairies.mbtiles dist/communes.mbtiles dist/epcis.mbtiles dist/departements.mbtiles dist/regions.mbtiles;
 fi
 echo "Terminé"

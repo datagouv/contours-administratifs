@@ -14,16 +14,18 @@
   },
   "dependencies": {
     "@etalab/decoupage-administratif": "5.0.1",
-    "@keyv/sqlite": "^3.0.0",
+    "@keyv/sqlite": "^4.0.4",
+    "@turf/point-on-feature": "^7.2.0",
     "@turf/turf": "^6.5.0",
     "JSONStream": "^1.3.5",
     "bluebird": "^3.7.2",
     "decompress": "^4.2.1",
     "dotenv": "^16.0.0",
     "fs-extra": "^10.0.0",
+    "gdal-async": "^3.11.0",
     "get-stream": "^6.0.1",
     "got": "^11",
-    "keyv": "^4.1.1",
+    "keyv": "^5.3.4",
     "lodash": "^4.17.21",
     "mapshaper": "^0.4.152",
     "node-7z": "^3.0.0"
@@ -33,9 +35,13 @@
   },
   "xo": {
     "semicolon": false,
-    "space": 2
+    "space": 2,
+    "envs": ["node", "browser"],
+    "rules": {
+      "no-await-in-loop": 0
+    }
   },
   "engines": {
-    "node": ">= 10"
+    "node": ">= 12"
   }
 }

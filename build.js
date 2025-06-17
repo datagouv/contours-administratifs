@@ -2,13 +2,15 @@
 require('dotenv').config()
 const {join} = require('path')
 const {chain} = require('lodash')
-const Keyv = require('keyv')
+const {Keyv} = require('keyv')
+
 const bluebird = require('bluebird')
 const {outputJson, readFile} = require('fs-extra')
 const {truncate, feature} = require('@turf/turf')
 const extractFeaturesFromShapefiles = require('./lib/extract-features-from-shapefiles')
 const mergeFeatures = require('./lib/merge-features')
 const composeFeatures = require('./lib/compose-features')
+const processMairies = require('./extract-mairies')
 const {communes, communesAssocieesDeleguees, epci, departements, regions, communesIndexes, epciIndexes} = require('./lib/decoupage-administratif')
 
 const SOURCES_PATH = join(__dirname, 'sources')
@@ -20,7 +22,7 @@ async function getSimplifiedGeometries(featuresFiles, interval) {
   return chain(readFeatures)
     .map(({properties: p, geometry}) => {
       return [
-        p.INSEE_ARM || p.INSEE_CAD || p.INSEE_COM || p.insee,
+        p.INSEE_ARM || p.INSEE_CAD || p.INSEE_COM || p.code_insee || p.insee,
         geometry
       ]
     })
@@ -202,7 +204,6 @@ async function buildAndWriteCommunes(communesIndex, interval) {
 
     return feature(geometry, properties)
   })
-
   await writeLayer(communesFeatures, interval, 'communes')
 }
 
@@ -281,11 +282,16 @@ async function main() {
     'ARRONDISSEMENT_MUNICIPAL.dbf',
     'ARRONDISSEMENT_MUNICIPAL.prj',
     'ARRONDISSEMENT_MUNICIPAL.shx',
-    'osm-communes-com.cpg',
-    'osm-communes-com.shp',
-    'osm-communes-com.dbf',
-    'osm-communes-com.prj',
-    'osm-communes-com.shx'
+    'COLLECTIVITE_TERRITORIALE_977_978.cpg',
+    'COLLECTIVITE_TERRITORIALE_977_978.dbf',
+    'COLLECTIVITE_TERRITORIALE_977_978.prj',
+    'COLLECTIVITE_TERRITORIALE_977_978.shp',
+    'COLLECTIVITE_TERRITORIALE_977_978.shx',
+    'osm-communes-com-without-admin-express.cpg',
+    'osm-communes-com-without-admin-express.shp',
+    'osm-communes-com-without-admin-express.dbf',
+    'osm-communes-com-without-admin-express.prj',
+    'osm-communes-com-without-admin-express.shx'
   ])
 
   const featuresCommunesAssocieesDelegueesFiles = await readSourcesFiles([
@@ -307,6 +313,8 @@ async function main() {
   await buildContours(featuresFiles, 100)
   await buildContours(featuresFiles, 50)
   await buildContours(featuresFiles, 5)
+
+  await processMairies()
 }
 
 main().catch(error => {

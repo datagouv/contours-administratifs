@@ -1,18 +1,25 @@
 #!/usr/bin/env node
 const path = require('path')
 const fs = require('fs')
+const {pathExists} = require('fs-extra')
 const gdal = require('gdal-async')
 const {pointOnFeature} = require('@turf/point-on-feature')
 const SOURCES_PATH = path.join(__dirname, 'sources')
 
-const overpassUrl = 'https://overpass-api.de/api/interpreter'
+function sleep(ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms)
+  })
+}
+
+const overpassUrl = 'https://overpass.kumi.systems/api/interpreter'
 let geojsonCommunesMortes
 
 let communesMortesPourLaFrance = `
 insee,nom,id_osm
 55039,Beaumont-en-Verdunois,4735299808
 55050,Bezonvaux,1300835620
-55139,Cumières-le-Mort-Homme,1301164907
+55139,Cumières-le-Mort-Homme,1708015706
 55189,Fleury-devant-Douaumont,915457748
 55239,Haumont-près-Samogneux,1300745684
 55307,Louvemont-Côte-du-Poivre,1300745706
@@ -29,23 +36,40 @@ communesMortesPourLaFrance = communesMortesPourLaFrance.slice(1)
 async function geoJSONCommunesMortesPourLaFrance(communesMortesPourLaFrance) {
   const geojsonMemorial = {type: 'FeatureCollection', features: []}
   for (const commune of communesMortesPourLaFrance) {
-    const query = `[out:json];node(id:${commune.id_osm});out;`
-    const result = await queryOverpass(query)
-    const {lon, lat} = result.elements[0]
-    geojsonMemorial.features.push({
-      type: 'Feature',
-      properties: { // eslint-disable-next-line camelcase
-        code_insee: commune.insee,
-        nom: commune.nom,
-        type: 'memorial'
-      },
-      geometry: {
-        coordinates: [lon, lat],
-        type: 'Point'
+    const fileName = `communes_mortes_${commune.insee}_pour_la_france.geojson`
+    if (await pathExists(getSourceFilePath(fileName))) {
+      console.log(`L'information est déjà présente pour la commune ${commune.nom} (${commune.insee}) et dont l'id OSM est ${commune.id_osm}`)
+    } else {
+      const query = `[out:json];node(id:${commune.id_osm});out;`
+      const result = await queryOverpass(query)
+      await sleep(6000)
+      console.log('OSM id', commune.id_osm)
+      if (result && result.elements) {
+        console.log(result.elements[0])
+      } else {
+        console.log('return', result)
       }
-    })
+
+      console.log('OSM commune info', commune)
+      const {lon, lat} = result.elements[0]
+      const memorialInfo = {
+        type: 'Feature',
+        properties: { // eslint-disable-next-line camelcase
+          code_insee: commune.insee,
+          nom: commune.nom,
+          type: 'memorial'
+        },
+        geometry: {
+          coordinates: [lon, lat],
+          type: 'Point'
+        }
+      }
+      await fs.promises.writeFile(getSourceFilePath(fileName), JSON.stringify(memorialInfo))
+    }
   }
 
+  const files = fs.globSync('sources/communes_mortes_*_pour_la_france.geojson')
+  geojsonMemorial.features = files.map(file => JSON.parse(fs.readFileSync(file, 'utf8')))
   return geojsonMemorial
 }
 
@@ -114,7 +138,18 @@ async function processMairies() {
   }
 
   allMairiesCentre.features = [...allMairiesCentre.features, ...geojsonCommunesMortes.features]
-  allMairiesCentre.features = allMairiesCentre.features.toSorted((a, b) => a.properties.code_insee - b.properties.code_insee)
+  allMairiesCentre.features = allMairiesCentre.features.map(feature => {
+    return {
+      type: 'Feature',
+      properties: {
+        commune: feature.properties.code_insee,
+        nom: feature.properties.nom,
+        type: feature.properties.type
+      },
+      geometry: feature.geometry
+    }
+  })
+  allMairiesCentre.features = allMairiesCentre.features.toSorted((a, b) => a.properties.commune - b.properties.commune)
 
   await fs.promises.writeFile(path.join('dist', 'mairies.geojson'), JSON.stringify(allMairiesCentre))
 }

@@ -13,7 +13,7 @@
     "lint": "xo"
   },
   "dependencies": {
-    "@etalab/decoupage-administratif": "5.0.1",
+    "@etalab/decoupage-administratif": "6.0.0",
     "@keyv/sqlite": "^4.0.4",
     "@turf/point-on-feature": "^7.2.0",
     "@turf/turf": "^6.5.0",

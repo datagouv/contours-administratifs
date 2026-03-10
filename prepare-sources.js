@@ -9,8 +9,8 @@ const decompress = require('decompress')
 
 const SOURCES_PATH = path.join(__dirname, 'sources')
 
-const ADMIN_EXPRESS_BASE_URL = 'https://data.geopf.fr/telechargement/download/ADMIN-EXPRESS-COG/ADMIN-EXPRESS-COG_4-0__GPKG_WGS84G_FRA_2025-01-01/'
-const ADMIN_EXPRESS_FILE = 'ADMIN-EXPRESS-COG_4-0__GPKG_WGS84G_FRA_2025-01-01.7z'
+const ADMIN_EXPRESS_BASE_URL = 'https://data.geopf.fr/telechargement/download/ADMIN-EXPRESS/ADMIN-EXPRESS_4-0__GPKG_WGS84G_FRA_2026-01-19/'
+const ADMIN_EXPRESS_FILE = 'ADMIN-EXPRESS_4-0__GPKG_WGS84G_FRA_2026-01-19.7z'
 
 const OSM_COMMUNES_COM_BASE_URL = 'http://etalab-datasets.geo.data.gouv.fr/contours-administratifs/2022/shp/'
 const OSM_COMMUNES_COM_FILE = 'communes-com-20220101-shp.zip'
